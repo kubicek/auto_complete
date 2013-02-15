@@ -1,22 +1,37 @@
-require 'rake' 
-require 'rake/testtask' 
-require 'rake/rdoctask' 
- 
-desc 'Default: run unit tests.' 
-task :default => :test 
- 
-desc 'Test auto_complete plugin.' 
-Rake::TestTask.new(:test) do |t| 
-  t.libs << 'lib' 
-  t.pattern = 'test/**/*_test.rb' 
-  t.verbose = true 
-end 
- 
-desc 'Generate documentation for auto_complete plugin.' 
-Rake::RDocTask.new(:rdoc) do |rdoc| 
-  rdoc.rdoc_dir = 'rdoc' 
-  rdoc.title    = 'Auto Complete' 
-  rdoc.options << '--line-numbers' << '--inline-source' 
-  rdoc.rdoc_files.include('README') 
-  rdoc.rdoc_files.include('lib/**/*.rb') 
+#!/usr/bin/env rake
+begin
+  require 'bundler/setup'
+rescue LoadError
+  puts 'You must `gem install bundler` and `bundle install` to run rake tasks'
 end
+begin
+  require 'rdoc/task'
+rescue LoadError
+  require 'rdoc/rdoc'
+  require 'rake/rdoctask'
+  RDoc::Task = Rake::RDocTask
+end
+
+RDoc::Task.new(:rdoc) do |rdoc|
+  rdoc.rdoc_dir = 'rdoc'
+  rdoc.title    = 'Auto Complete'
+  rdoc.options << '--line-numbers' << '--inline-source'
+  rdoc.rdoc_files.include('README')
+  rdoc.rdoc_files.include('lib/**/*.rb')
+end
+
+
+
+
+Bundler::GemHelper.install_tasks
+
+require 'rake/testtask'
+
+Rake::TestTask.new(:test) do |t|
+  t.libs << 'lib'
+  t.pattern = 'test/**/*_test.rb'
+  t.verbose = true
+end
+
+
+task :default => :test
